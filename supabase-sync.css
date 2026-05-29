@@ -1,3 +1,81 @@
+.account-gate {
+  display: grid;
+  min-height: 100vh;
+  place-items: center;
+  padding: 24px;
+  background:
+    radial-gradient(circle at 50% 0%, rgba(13, 107, 100, 0.08), transparent 34%),
+    var(--bg);
+}
+
+.account-gate-panel {
+  width: min(620px, 100%);
+  padding: 28px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  background: rgba(255, 255, 255, 0.9);
+  box-shadow: var(--shadow);
+}
+
+.account-gate-brand {
+  margin-bottom: 28px;
+}
+
+.account-gate-copy h2 {
+  margin: 0;
+  font-size: clamp(31px, 7vw, 48px);
+  line-height: 1.08;
+}
+
+.account-gate-copy p {
+  margin: 12px 0 0;
+  color: var(--muted);
+  font-size: 15px;
+  line-height: 1.7;
+}
+
+.account-choice-grid {
+  display: grid;
+  gap: 10px;
+  margin-top: 24px;
+}
+
+.account-choice {
+  display: grid;
+  gap: 5px;
+  width: 100%;
+  min-height: 78px;
+  padding: 16px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  background: var(--surface);
+  color: var(--text);
+  text-align: left;
+}
+
+.account-choice:hover,
+.account-choice:focus-visible {
+  border-color: #b6d8c8;
+  background: var(--accent-soft);
+  outline: none;
+}
+
+.account-choice strong {
+  font-size: 18px;
+}
+
+.account-choice span {
+  color: var(--muted);
+  font-size: 13px;
+}
+
+.account-gate-note {
+  margin: 16px 0 0;
+  color: var(--muted);
+  font-size: 12px;
+  line-height: 1.55;
+}
+
 .profile-switcher {
   display: grid;
   gap: 10px;
