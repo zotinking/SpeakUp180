@@ -6,15 +6,16 @@
 
   let cloudSaveTimer = null;
   let suppressCloudSave = false;
-  let profileReady = PROFILES.includes(localStorage.getItem(ACTIVE_PROFILE_KEY));
+  let profileReady = false;
 
   const originalRender = render;
   const originalSave = save;
   const originalApplyImport = applyImport;
   const originalResetCurriculum = typeof resetCurriculum === "function" ? resetCurriculum : null;
+  const lastProfile = localStorage.getItem(ACTIVE_PROFILE_KEY);
 
-  state.profile = profileReady ? localStorage.getItem(ACTIVE_PROFILE_KEY) : "";
-  state.syncStatus = profileReady ? "클라우드 연결 준비 중" : "계정을 먼저 선택하세요";
+  state.profile = PROFILES.includes(lastProfile) ? lastProfile : "";
+  state.syncStatus = "계정을 먼저 선택하세요";
   state.syncBusy = false;
   state.lastSyncedAt = "";
 
@@ -59,13 +60,13 @@
           </div>
           <div class="account-gate-copy">
             <h2>학습 계정을 선택하세요</h2>
-            <p>진도는 선택한 계정으로 Supabase에 저장됩니다. 다른 계정으로 잘못 시작하지 않도록 처음에는 반드시 계정을 고르게 했습니다.</p>
+            <p>진도는 선택한 계정으로 Supabase에 저장됩니다. 다른 계정으로 잘못 시작하지 않도록 페이지에 들어올 때 먼저 계정을 고르게 했습니다.</p>
           </div>
           <div class="account-choice-grid">
             ${PROFILES.map((profile) => `
               <button class="account-choice" data-initial-profile="${profile}">
                 <strong>${profile}</strong>
-                <span>${profile}의 학습 진도 불러오기</span>
+                <span>${profile === state.profile ? "최근 사용한 계정 · " : ""}${profile}의 학습 진도 불러오기</span>
               </button>
             `).join("")}
           </div>
@@ -247,5 +248,4 @@
   }
 
   render();
-  if (profileReady) loadCloudState();
 })();
