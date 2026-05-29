@@ -6,13 +6,15 @@
 
   let cloudSaveTimer = null;
   let suppressCloudSave = false;
+  let profileReady = PROFILES.includes(localStorage.getItem(ACTIVE_PROFILE_KEY));
+
   const originalRender = render;
   const originalSave = save;
   const originalApplyImport = applyImport;
   const originalResetCurriculum = typeof resetCurriculum === "function" ? resetCurriculum : null;
 
-  state.profile = localStorage.getItem(ACTIVE_PROFILE_KEY) || "zotinking";
-  state.syncStatus = "클라우드 연결 준비 중";
+  state.profile = profileReady ? localStorage.getItem(ACTIVE_PROFILE_KEY) : "";
+  state.syncStatus = profileReady ? "클라우드 연결 준비 중" : "계정을 먼저 선택하세요";
   state.syncBusy = false;
   state.lastSyncedAt = "";
 
@@ -47,9 +49,38 @@
     };
   }
 
+  function renderAccountGate() {
+    document.querySelector("#app").innerHTML = `
+      <main class="account-gate">
+        <section class="account-gate-panel">
+          <div class="brand account-gate-brand">
+            <div class="brand-mark">180</div>
+            <div><h1>SpeakUp 180</h1><p>입으로 깨우는 영어</p></div>
+          </div>
+          <div class="account-gate-copy">
+            <h2>학습 계정을 선택하세요</h2>
+            <p>진도는 선택한 계정으로 Supabase에 저장됩니다. 다른 계정으로 잘못 시작하지 않도록 처음에는 반드시 계정을 고르게 했습니다.</p>
+          </div>
+          <div class="account-choice-grid">
+            ${PROFILES.map((profile) => `
+              <button class="account-choice" data-initial-profile="${profile}">
+                <strong>${profile}</strong>
+                <span>${profile}의 학습 진도 불러오기</span>
+              </button>
+            `).join("")}
+          </div>
+          <p class="account-gate-note">비밀번호 없는 개인용 선택 방식입니다. 공개 서비스로 키우면 로그인 보호를 추가하는 편이 안전합니다.</p>
+        </section>
+      </main>
+    `;
+    document.querySelectorAll("[data-initial-profile]").forEach((button) => {
+      button.addEventListener("click", () => selectInitialProfile(button.dataset.initialProfile));
+    });
+  }
+
   function updateSyncStatus(text) {
     state.syncStatus = text;
-    injectProfileUi();
+    if (profileReady) injectProfileUi();
   }
 
   function syncStamp(label) {
@@ -59,6 +90,7 @@
   }
 
   async function loadCloudState() {
+    if (!profileReady || !state.profile) return;
     state.syncBusy = true;
     updateSyncStatus(`${state.profile} 동기화 불러오는 중`);
     try {
@@ -77,7 +109,6 @@
           recallDone: progress.recall_done || {},
           checkedSentences: progress.checked_sentences || {}
         };
-        state.read = typeof state.read === "number" ? state.read : state.readRemaining;
         if (typeof doneRead === "function" && doneRead()) state.step = "recall";
         originalSave();
         suppressCloudSave = false;
@@ -100,6 +131,7 @@
   }
 
   async function saveCloudState() {
+    if (!profileReady || !state.profile) return;
     state.syncBusy = true;
     updateSyncStatus(`${state.profile} 저장 중`);
     try {
@@ -117,6 +149,7 @@
   }
 
   async function saveCloudCurriculum() {
+    if (!profileReady || !state.profile) return;
     try {
       await request("speakup_curriculums?on_conflict=profile_id", {
         method: "POST",
@@ -138,7 +171,7 @@
   }
 
   function queueCloudSave() {
-    if (suppressCloudSave) return;
+    if (suppressCloudSave || !profileReady) return;
     clearTimeout(cloudSaveTimer);
     cloudSaveTimer = setTimeout(saveCloudState, 700);
   }
@@ -166,9 +199,9 @@
     }
   }
 
-  function switchProfile(profile) {
-    if (!PROFILES.includes(profile) || profile === state.profile) return;
-    clearTimeout(cloudSaveTimer);
+  function selectInitialProfile(profile) {
+    if (!PROFILES.includes(profile)) return;
+    profileReady = true;
     state.profile = profile;
     localStorage.setItem(ACTIVE_PROFILE_KEY, profile);
     state.day = 1;
@@ -181,7 +214,17 @@
     loadCloudState();
   }
 
+  function switchProfile(profile) {
+    if (!PROFILES.includes(profile) || profile === state.profile) return;
+    clearTimeout(cloudSaveTimer);
+    selectInitialProfile(profile);
+  }
+
   render = function patchedRender() {
+    if (!profileReady) {
+      renderAccountGate();
+      return;
+    }
     originalRender();
     injectProfileUi();
   };
@@ -204,5 +247,5 @@
   }
 
   render();
-  loadCloudState();
+  if (profileReady) loadCloudState();
 })();
