@@ -1,5 +1,5 @@
 (() => {
-  const key = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJIUzI1NiIsInJlZiI6Imhtbm1lZG94cWhpeXp3bXZ5aGx0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODAwMDE3NjQsImV4cCI6MjA5NTU3Nzc2NH0.AmhG2WKv3PDqoft95Oojz32adZAt0nbDa4wEu9aHiWw";
+  const key = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imhtbm1lZG94cWhpeXp3bXZ5aGx0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODAwMDE3NjQsImV4cCI6MjA5NTU3Nzc2NH0.AmhG2WKv3PDqoft95Oojz32adZAt0nbDa4wEu9aHiWw";
   if (typeof headers === "function") {
     headers = (extra = {}) => ({
       apikey: key,
