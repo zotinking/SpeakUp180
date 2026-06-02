@@ -1,7 +1,24 @@
 (() => {
+  function readDoneNow() {
+    if (typeof isReadDone === "function") return isReadDone();
+    if (typeof doneRead === "function") return doneRead();
+    return Boolean(state.progress?.readDone?.[`day-${state.day}`]);
+  }
+
+  function recallDoneNow() {
+    if (typeof recallCount === "function") return recallCount();
+    return (state.progress?.recallDone?.[`day-${state.day}`] || []).length;
+  }
+
+  function checkedDoneNow() {
+    if (typeof checkedCount === "function") return checkedCount();
+    if (typeof checkCount === "function") return checkCount();
+    return (state.progress?.checkedSentences?.[`day-${state.day}`] || []).length;
+  }
+
   function mobileHomeSummary() {
     const dayProgress = Math.round((state.day / 180) * 100);
-    const todayDone = Math.round(((isReadDone() ? 1 : 0) + recallCount() / 10 + checkedCount() / 10) / 3 * 100);
+    const todayDone = Math.round(((readDoneNow() ? 1 : 0) + recallDoneNow() / 10 + checkedDoneNow() / 10) / 3 * 100);
     const homeButton = state.view !== "routine" ? `<button data-mobile-home aria-label="루틴 선택으로 이동">⌂</button>` : "";
     return `
       <section class="mobile-home-summary">
@@ -20,7 +37,7 @@
         <div class="mobile-stat-grid">
           <div><span>로드맵</span><strong>${state.day}/180</strong><em>${dayProgress}%</em></div>
           <div><span>완료율</span><strong>${todayDone}%</strong><em>오늘</em></div>
-          <div><span>암송</span><strong>${recallCount()}/10</strong><em>힌트 카드</em></div>
+          <div><span>암송</span><strong>${recallDoneNow()}/10</strong><em>힌트 카드</em></div>
         </div>
       </section>
     `;
