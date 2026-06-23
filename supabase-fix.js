@@ -15,7 +15,9 @@
         headers: headers(options.headers || {})
       });
       if (!res.ok) throw new Error((await res.text()) || `Supabase ${res.status}`);
-      return res.status === 204 ? null : res.json();
+      if (res.status === 204) return null;
+      const text = await res.text();
+      return text ? JSON.parse(text) : null;
     };
   }
 })();
