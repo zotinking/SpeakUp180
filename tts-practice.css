@@ -58,8 +58,10 @@
 }
 
 .tts-icon-button {
+  display: grid;
   width: 40px;
   height: 40px;
+  padding: 0;
   border: 1px solid var(--line);
   border-radius: var(--radius);
   background: var(--surface);
@@ -67,6 +69,18 @@
   font-size: 24px;
   font-weight: 700;
   line-height: 1;
+  place-items: center;
+}
+
+[data-tts-stop] {
+  font-size: 0;
+}
+
+[data-tts-stop]::before {
+  width: 11px;
+  height: 11px;
+  background: currentColor;
+  content: "";
 }
 
 .tts-rate {
